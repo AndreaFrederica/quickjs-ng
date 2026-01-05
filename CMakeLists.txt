@@ -229,7 +229,7 @@ endif()
 # QuickJS library
 #
 
-xoption(QJS_BUILD_LIBC "Build standard library modules as part of the library" OFF)
+xoption(QJS_BUILD_LIBC "Build standard library modules as part of the library" ON)
 macro(add_qjs_libc_if_needed target)
     if(NOT QJS_BUILD_LIBC)
         target_sources(${target} PRIVATE quickjs-libc.c)
@@ -438,7 +438,14 @@ if(QJS_BUILD_EXAMPLES)
     target_link_libraries(test_fib qjs)
 endif()
 
-# Install target
+# Compatibility alias for PrismLauncher
+# The old build system expected 'quickjs' and 'quickjs-libc' targets.
+# In QuickJS-NG with QJS_BUILD_LIBC=ON, 'qjs' target includes libc functionality.
+add_library(quickjs ALIAS qjs)
+add_library(quickjs-libc ALIAS qjs)
+add_library(quickjs-interface INTERFACE)
+target_link_libraries(quickjs-interface INTERFACE qjs)
+
 #
 
 file(STRINGS quickjs.h quickjs_h REGEX QJS_VERSION)
